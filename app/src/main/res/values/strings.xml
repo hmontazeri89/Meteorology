@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">هواشناسی</string>
+
+    <string name="toolbar_title">هواشناسی</string>
+    <string name="hamburger_menu_desc">hamburger menu desc</string>
+    <string name="about_us">مجموعه وی همیار در زمینه فروش محصولات دانلودی شامل سورس اپلیکیشن، فیلم و مقالات آموزشی اندروید فعالیت می کند که با فراهم کردن امکان بازاریابی و فروش محصولاتش توسط کاربران، به بستری مناسب جهت کسب درآمد آنها نیز بدل شده است.</string>
+    <string name="email">support@vhamyar.ir</string>
+    <string name="view_web_site">مشاهده سایت</string>
+
+    // days of week
+    <string name="Saturday">شنبه</string>
+    <string name="Sunday">یک شنبه</string>
+    <string name="Monday">دو شنبه</string>
+    <string name="Tuesday">سه شنبه</string>
+    <string name="Wednesday">چهار شنبه</string>
+    <string name="Thursday">پنج شنبه</string>
+    <string name="Friday">جمعه</string>
+    <string name="connect_to_network_text">به اینترنت متصل شوید</string>
+    <string name="gps_connection_text">لوکیشن دستگاه را فعال نمایید</string>
+    <string name="permission_denied">برنامه به مکان شما دسترسی ندارد. نمایش شهر پیش فرض…</string>
+    <string name="pull_down">صفحه را به پایین بکشید</string>
+    <string name="city_not_found">شهر یافت نشد</string>
+    <string name="current_weather_icon">current_weather_icon</string>
+    <string name="weather_icon">weather icon</string>
+    <string name="turn_on_gps">لوکیشن را روشن نمایید</string>
+    <string name="search_query_hint">جستجوی شهر</string>
+    <string name="celsius">°C</string>
+
+</resources>

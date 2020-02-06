@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="light_blue">#aec4df</color>
+    <color name="dark_blue">#6a7db2</color>
+
+    <color name="text_view_color">@android:color/black</color>
+
+    <color name="card_view_bg">#f2f2f2</color>
+    <color name="bg">#f2f2f2</color>
+
+</resources>
