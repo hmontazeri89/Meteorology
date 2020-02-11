@@ -8,8 +8,8 @@ android {
         applicationId "ir.vhamyar.meteorology"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 302
-        versionName "3.0.2"
+        versionCode 303
+        versionName "3.0.3"
         setProperty("archivesBaseName", "meteorology_v ${versionName}")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,10 +52,11 @@ dependencies {
     //gson converter
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 
-    // smart location
-    implementation 'io.nlopez.smartlocation:library:3.3.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // location
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
 
+    // event bus
+    implementation 'org.greenrobot:eventbus:3.1.1'
 
 }
 repositories {

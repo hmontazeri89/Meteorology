@@ -25,5 +25,6 @@
     <string name="turn_on_gps">لوکیشن را روشن نمایید</string>
     <string name="search_query_hint">جستجوی شهر</string>
     <string name="celsius">°C</string>
+    <string name="cant_get_your_location">موقعیت فعلی شما یافت نشد. صفحه را به پایین بکشید.</string>
 
 </resources>

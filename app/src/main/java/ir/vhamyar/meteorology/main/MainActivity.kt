@@ -3,21 +3,21 @@ package ir.vhamyar.meteorology.main
 import android.Manifest
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.nlopez.smartlocation.SmartLocation
 import ir.vhamyar.meteorology.Adapter
+import ir.vhamyar.meteorology.service.LocationService
 import ir.vhamyar.meteorology.R
+import ir.vhamyar.meteorology.model.LocationEvent
 import ir.vhamyar.meteorology.model.current.Current
 import ir.vhamyar.meteorology.model.forecast.Forecast
 import ir.vhamyar.meteorology.model.geocode.GeoCode
@@ -26,6 +26,8 @@ import ir.vhamyar.meteorology.util.Helper.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import okhttp3.OkHttpClient
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,11 +36,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        progressBar.visibility = View.VISIBLE
+
+        startService(Intent(this, LocationService::class.java))
 
         bindWidgets()
         checkPermissions()
@@ -49,7 +55,7 @@ class MainActivity : AppCompatActivity(){
         refresh.setOnRefreshListener {
             if (isConnected(this@MainActivity)) {
                 if (isGpsEnabled(this@MainActivity)) {
-                    findLocation()
+                    recreate()
                 } else {
                     showSnackBar(container, resources.getString(R.string.gps_connection_text))
                 }
@@ -65,6 +71,7 @@ class MainActivity : AppCompatActivity(){
         }
         if (!isGpsEnabled(this)) {
             showSnackBar(container, getString(R.string.turn_on_gps))
+            if (progressBar.visibility == View.VISIBLE) progressBar.visibility = View.GONE
             return
         }
 
@@ -78,34 +85,13 @@ class MainActivity : AppCompatActivity(){
                     arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
                     REQ_CODE
             )
-        } else {
-            findLocation()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == REQ_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            findLocation()
-        } else {
-            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-            Handler().postDelayed({ finish() }, 1500)
-        }
-    }
-
-    private fun findLocation() {
-        if (!isGpsEnabled(this)) {
-            showSnackBar(container, getString(R.string.gps_connection_text))
+        if (requestCode == REQ_CODE && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             return
         }
-        progressBar.visibility = View.VISIBLE
-
-        SmartLocation.with(this).location().oneFix().start {
-            val latitude = it.latitude
-            val longitude = it.longitude
-
-            findCity(latitude, longitude)
-        }
-
     }
 
     private fun findCity(lat: Double, lon: Double) {
@@ -226,7 +212,7 @@ class MainActivity : AppCompatActivity(){
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (isConnected(this@MainActivity)) {
-                    if (!progressBar.isShown) {
+                    if (progressBar.visibility == View.GONE || progressBar.visibility == View.INVISIBLE) {
                         progressBar.visibility = View.VISIBLE
                     }
                     getCurrentData(query.trim().toLowerCase(Locale.getDefault()))
@@ -235,7 +221,7 @@ class MainActivity : AppCompatActivity(){
                     searchView.setQuery("", true)
                     searchView.clearFocus()
 
-                    if (progressBar.isShown) {
+                    if (progressBar.visibility == View.VISIBLE) {
                         progressBar.visibility = View.GONE
                     }
                 } else {
@@ -261,4 +247,21 @@ class MainActivity : AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe
+    fun onMessageEvent(event: LocationEvent) {
+        val latitude = event.latitude
+        val longitude = event.longitude
+        Log.d(TAG, "onMessageEvent -> lat= $latitude, lon = $longitude")
+        findCity(latitude, longitude)
+    }
 }
